@@ -1,36 +1,67 @@
 import React from 'react';
 
-import { Box, Flex, Heading, Stack } from '@chakra-ui/react';
-import { updateNews } from '../api';
-import { NewsContext } from '../context';
+import { Button, SkeletonText, VStack } from '@chakra-ui/react';
 import NewsRow from '../components/News/NewsRow';
+import { useAppSelector, useAppDispatch } from '../hooks';
+import { selectNewsItems, updateNewsItems } from '../redux/newsSlice';
+import { getLastNewsIds, getNews } from '../api';
+import { colors } from '../design/colors';
+import { RepeatIcon } from '@chakra-ui/icons';
 
-const News: React.FC = () => {
-    const { news, setNews } = React.useContext(NewsContext);
+const News: React.FC<{ isLoaded: boolean }> = ({ isLoaded }) => {
+    const { newsItems, latestNewsId } = useAppSelector(selectNewsItems);
+    const dispatch = useAppDispatch();
+
+    const updateNews = () => {
+        getLastNewsIds().then((data) => {
+            const currentLatestNewsId = data.indexOf(latestNewsId);
+            if (currentLatestNewsId !== 0) {
+                const ids = data.slice(0, currentLatestNewsId);
+                getNews(ids).then((data) => dispatch(updateNewsItems(data)));
+                console.log('Added news', ids);
+            }
+            console.log('Not updated');
+        });
+    };
 
     React.useEffect(() => {
         const intervalCall = setInterval(() => {
-            console.log('intervalCall:', news);
-            updateNews(news).then((data) => setNews(data));
-        }, 1000 * 6);
+            updateNews();
+        }, 1000 * 60); // One minute
         return () => {
             clearInterval(intervalCall);
         };
-    }, [news]);
+    }, [newsItems, latestNewsId]);
 
     return (
-        <Flex height="100vh" justifyContent="center" alignItems="center" flexDirection="column">
-            <Box width="75%">
-                <Heading color="white">Latest news</Heading>
-                <Box rounded="md" bg="purple.500" color="white" px="15px" py="15px">
-                    <Stack spacing={3}>
-                        {news.map((row) => (
-                            <NewsRow key={row.id} row={row} />
-                        ))}
-                    </Stack>
-                </Box>
-            </Box>
-        </Flex>
+        <>
+            <Button
+                fontSize="md"
+                variant="outline"
+                _hover={{ bg: 'gray.50' }}
+                mx={3}
+                my={1}
+                w="fit-content"
+                color={colors.primary}
+                onClick={() => updateNews()}
+                display="flex"
+            >
+                <RepeatIcon mr={1} />
+                Update
+            </Button>
+            {!isLoaded && (
+                <VStack spacing={5} padding={3} align="stretch">
+                    {[...Array(30)].map((_, index) => (
+                        <SkeletonText key={index} noOfLines={5} />
+                    ))}
+                </VStack>
+            )}
+            <VStack spacing={3} padding={3} align="stretch">
+                {newsItems.map((row, index) => (
+                    <NewsRow key={row.id} row={row} index={index} />
+                ))}
+            </VStack>
+        </>
     );
 };
 

@@ -3,7 +3,7 @@ export type NewsItemInfo = {
     url: string | undefined;
     title: string | undefined;
     rating: number | undefined;
-    date: string | undefined;
+    time: number | undefined;
     author: string | undefined;
     commentsCount: number | undefined;
     comments: number[] | undefined;
@@ -13,12 +13,6 @@ export type NewsItemInfo = {
 export type Comment = {
     id: number;
     author: string | undefined;
-    date: string | undefined;
+    time: number | undefined;
     text: string | undefined;
-};
-
-export type BookState = {
-    id: string;
-    title: string | undefined;
-    author: string | undefined;
 };

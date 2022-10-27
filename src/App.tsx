@@ -1,35 +1,51 @@
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
 
 import Navbar from './components/Navbar';
-import BookInfo from './components/BookInfo';
 import News from './pages/News';
-import { NewsContext } from './context';
+import NewsItem from './pages/NewsItem';
 import React from 'react';
-import { getLastNews, getNewStories } from './api';
-import { NewsItemInfo } from './types';
+import { getLastNews } from './api';
+import { useAppDispatch } from './hooks';
+import { setNewsItems } from './redux/newsSlice';
+import Head from './components/Head';
+import { Flex } from '@chakra-ui/react';
+
+const PageWrapper: React.FC = (props) => {
+    return (
+        <Flex direction="column" maxW={{ xl: '1400px' }} m="0 auto">
+            {props.children}
+        </Flex>
+    );
+};
 
 function App() {
-    const [news, setNews] = React.useState<NewsItemInfo[]>([]);
-    const [stories, setStories] = React.useState<number[]>([]);
+    const dispatch = useAppDispatch();
+    const [isLoaded, setIsLoaded] = React.useState<boolean>(false);
 
     React.useEffect(() => {
-        getNewStories().then((data) => setStories(data));
-        getLastNews(2).then((data) => {
-            setNews(data);
+        setIsLoaded(false);
+        getLastNews().then((data) => {
+            dispatch(setNewsItems(data));
+            setIsLoaded(true);
         });
+        console.log('Initialized');
     }, []);
-    console.log('stories:', stories);
+
     return (
-        <NewsContext.Provider value={{ news, setNews }}>
-            <Router>
+        <Router>
+            <Head title="Hacker News" />
+            <PageWrapper>
                 <Navbar />
                 <Switch>
-                    <Route path="/news" exact component={News} />
-                    <Route path="/news-item/:id" component={BookInfo} /> {/* NewsItem */}
-                    <Route path="*" component={() => <h1 color="white">404 Not Found</h1>} />
+                    <Redirect exact from="/" to="/news" />
+                    <Route path="/news" exact>
+                        <News isLoaded={isLoaded} />
+                    </Route>
+                    <Route path="/news-item/:id" component={NewsItem} /> {/* NewsItem */}
+                    <Route path="*" component={() => <h1>404 Not Found</h1>} /> {/* TODO: Change style */}
                 </Switch>
-            </Router>
-        </NewsContext.Provider>
+            </PageWrapper>
+        </Router>
     );
 }
 
