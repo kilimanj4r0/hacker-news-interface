@@ -1,18 +1,21 @@
 export type NewsItemInfo = {
     id: number;
-    url: string | undefined;
-    title: string | undefined;
-    rating: number | undefined;
-    time: number | undefined;
-    author: string | undefined;
-    commentsCount: number | undefined;
-    comments: number[] | undefined;
-    type: string | undefined;
+    url: string;
+    title: string;
+    rating: number;
+    time: number;
+    author: string;
+    commentsCount: number;
+    comments?: number[];
+    type: string;
 };
 
 export type Comment = {
     id: number;
-    author: string | undefined;
-    time: number | undefined;
-    text: string | undefined;
+    author: string;
+    time: number;
+    text: string;
+    parent: number;
+    kidsIds?: number[];
+    kids?: Comment[];
 };

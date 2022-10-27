@@ -4,6 +4,7 @@ import { Badge, Box } from '@chakra-ui/react';
 import { NewsItemInfo } from '../../types';
 import { Link } from 'react-router-dom';
 import { AtSignIcon, StarIcon, TimeIcon } from '@chakra-ui/icons';
+import { convertTimeToDate } from '../../utils';
 
 const NewsRow: React.FC<{ row: NewsItemInfo; index: number }> = ({ row, index }) => {
     return (
@@ -39,14 +40,7 @@ const NewsRow: React.FC<{ row: NewsItemInfo; index: number }> = ({ row, index })
                     </Box>
                     <Box color="gray.500" fontWeight="medium" fontSize="xs" display="flex" alignItems="center">
                         <TimeIcon mr={1} />
-                        {new Intl.DateTimeFormat('en-US', {
-                            year: 'numeric',
-                            month: '2-digit',
-                            day: '2-digit',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                            second: '2-digit',
-                        }).format(row.time)}
+                        {convertTimeToDate(row.time)}
                     </Box>
                 </Box>
             </Box>

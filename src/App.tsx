@@ -2,13 +2,13 @@ import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-d
 
 import Navbar from './components/Navbar';
 import News from './pages/News';
-import NewsItem from './pages/NewsItem';
+import NewsBlock from './pages/NewsBlock';
 import React from 'react';
 import { getLastNews } from './api';
 import { useAppDispatch } from './hooks';
 import { setNewsItems } from './redux/newsSlice';
 import Head from './components/Head';
-import { Flex } from '@chakra-ui/react';
+import { Flex, Heading } from '@chakra-ui/react';
 
 const PageWrapper: React.FC = (props) => {
     return (
@@ -41,8 +41,10 @@ function App() {
                     <Route path="/news" exact>
                         <News isLoaded={isLoaded} />
                     </Route>
-                    <Route path="/news-item/:id" component={NewsItem} /> {/* NewsItem */}
-                    <Route path="*" component={() => <h1>404 Not Found</h1>} /> {/* TODO: Change style */}
+                    <Route path="/news/:id">
+                        <NewsBlock />
+                    </Route>
+                    <Route path="*" component={() => <Heading textAlign="center">404 Not Found</Heading>} />
                 </Switch>
             </PageWrapper>
         </Router>

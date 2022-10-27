@@ -3,13 +3,13 @@ import React from 'react';
 import { Button, SkeletonText, VStack } from '@chakra-ui/react';
 import NewsRow from '../components/News/NewsRow';
 import { useAppSelector, useAppDispatch } from '../hooks';
-import { selectNewsItems, updateNewsItems } from '../redux/newsSlice';
+import { selectNewsItemsState, updateNewsItems } from '../redux/newsSlice';
 import { getLastNewsIds, getNews } from '../api';
 import { colors } from '../design/colors';
 import { RepeatIcon } from '@chakra-ui/icons';
 
 const News: React.FC<{ isLoaded: boolean }> = ({ isLoaded }) => {
-    const { newsItems, latestNewsId } = useAppSelector(selectNewsItems);
+    const { newsItems, latestNewsId } = useAppSelector(selectNewsItemsState);
     const dispatch = useAppDispatch();
 
     const updateNews = () => {
@@ -32,7 +32,7 @@ const News: React.FC<{ isLoaded: boolean }> = ({ isLoaded }) => {
             clearInterval(intervalCall);
         };
     }, [newsItems, latestNewsId]);
-
+    // TODO Maybe add pagination
     return (
         <>
             <Button
@@ -51,16 +51,18 @@ const News: React.FC<{ isLoaded: boolean }> = ({ isLoaded }) => {
             </Button>
             {!isLoaded && (
                 <VStack spacing={5} padding={3} align="stretch">
-                    {[...Array(30)].map((_, index) => (
+                    {[...Array(10)].map((_, index) => (
                         <SkeletonText key={index} noOfLines={5} />
                     ))}
                 </VStack>
             )}
-            <VStack spacing={3} padding={3} align="stretch">
-                {newsItems.map((row, index) => (
-                    <NewsRow key={row.id} row={row} index={index} />
-                ))}
-            </VStack>
+            {isLoaded && (
+                <VStack spacing={3} padding={3} align="stretch">
+                    {newsItems.map((row, index) => (
+                        <NewsRow key={row.id} row={row} index={index} />
+                    ))}
+                </VStack>
+            )}
         </>
     );
 };
