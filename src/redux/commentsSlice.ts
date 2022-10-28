@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from './store';
-import { Comment, CommentMap } from '../types';
+import { Comment } from '../types';
 import { getComment } from '../api';
 
 type initialStateType = {
@@ -58,6 +58,7 @@ export const commentsSlice = createSlice({
 export const { setUpdateComments, setCommentKids, clearCommentKids, clearComments } = commentsSlice.actions;
 
 export const selectComments = (state: RootState) => state.comments;
+
 export const selectCommentKids = (id: number) => {
     return (state: RootState) => {
         const comment = state.comments.comments.filter((comment) => comment.id === id)[0];
@@ -77,5 +78,5 @@ export const selectCommentKidsIds = (id: number) => {
         return comment.kidsIds;
     };
 };
-// () => { kidsIds: number[]; kids: Comment[] } | undefined
+
 export default commentsSlice.reducer;

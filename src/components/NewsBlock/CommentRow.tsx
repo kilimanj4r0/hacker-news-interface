@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Box, Button, Flex, VStack } from '@chakra-ui/react';
+import { Box, Button, Flex, SkeletonText, VStack } from '@chakra-ui/react';
 import { AtSignIcon, ChevronDownIcon, ChevronUpIcon, TimeIcon } from '@chakra-ui/icons';
 import { Comment } from '../../types';
 import { convertTimeToDate } from '../../utils';
@@ -13,7 +13,7 @@ const CommentRow: React.FC<{ comment: Comment; ml?: number }> = ({ comment, ml }
     const commentKids = useAppSelector(selectCommentKids(comment.id));
     const commentKidsIds = useAppSelector(selectCommentKidsIds(comment.id));
     const dispatch = useAppDispatch();
-
+    const [isKidsLoaded, setIsKidsLoaded] = React.useState<boolean>(true);
     const [kidsOpened, setKidsOpened] = React.useState<boolean>(false);
     const [disableKids, setDisableKids] = React.useState<boolean>(false);
 
@@ -22,6 +22,7 @@ const CommentRow: React.FC<{ comment: Comment; ml?: number }> = ({ comment, ml }
             setDisableKids(true);
             return;
         }
+        setIsKidsLoaded(false);
         getComments(commentKidsIds).then((data) => {
             dispatch(
                 setCommentKids({
@@ -29,9 +30,9 @@ const CommentRow: React.FC<{ comment: Comment; ml?: number }> = ({ comment, ml }
                     kids: data,
                 }),
             );
+            setIsKidsLoaded(true);
         });
     };
-    console.log('commentKidsIds', commentKidsIds, 'commentKids', commentKids);
 
     return (
         <Box ml={ml}>
@@ -91,8 +92,14 @@ const CommentRow: React.FC<{ comment: Comment; ml?: number }> = ({ comment, ml }
                     {kidsOpened ? <ChevronUpIcon /> : <ChevronDownIcon />}
                 </Button>
             </Box>
-            {/* TODO Add Skeleton */}
-            {kidsOpened && commentKids !== undefined && (
+            {!isKidsLoaded && (
+                <VStack spacing={5} padding={3} align="stretch">
+                    {[...Array(3)].map((_, index) => (
+                        <SkeletonText key={index} noOfLines={3} />
+                    ))}
+                </VStack>
+            )}
+            {isKidsLoaded && kidsOpened && commentKids !== undefined && (
                 <VStack spacing={3} py={3} align="stretch">
                     {commentKids.map((commentKid) => {
                         console.log('comment', commentKid);

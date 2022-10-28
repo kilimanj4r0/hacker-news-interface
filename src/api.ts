@@ -1,4 +1,4 @@
-import { Comment, CommentMap, NewsItemInfo } from './types';
+import { Comment, NewsItemInfo } from './types';
 
 export const API_URL: string = 'https://hacker-news.firebaseio.com/v0';
 export const API_URL_POSTFIX: string = '.json?print=pretty';

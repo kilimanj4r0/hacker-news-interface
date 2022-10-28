@@ -1,4 +1,4 @@
-import { Button, Flex, Box, Text } from '@chakra-ui/react';
+import { Box, Button, Flex, Text } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
 import { colors } from '../design/colors';
 

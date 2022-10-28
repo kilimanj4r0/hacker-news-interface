@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Button, SkeletonText, VStack } from '@chakra-ui/react';
 import NewsRow from '../components/News/NewsRow';
-import { useAppSelector, useAppDispatch } from '../hooks';
+import { useAppDispatch, useAppSelector } from '../hooks';
 import { selectNewsItemsState, updateNewsItems } from '../redux/newsSlice';
 import { getLastNewsIds, getNews } from '../api';
 import { colors } from '../design/colors';
@@ -18,9 +18,7 @@ const News: React.FC<{ isLoaded: boolean }> = ({ isLoaded }) => {
             if (currentLatestNewsId !== 0) {
                 const ids = data.slice(0, currentLatestNewsId);
                 getNews(ids).then((data) => dispatch(updateNewsItems(data)));
-                console.log('Added news', ids);
             }
-            console.log('Not updated');
         });
     };
 
