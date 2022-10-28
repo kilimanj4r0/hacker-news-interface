@@ -15,7 +15,12 @@ export type Comment = {
     author: string;
     time: number;
     text: string;
-    parent: number;
+    parent?: number;
     kidsIds?: number[];
+    // kids?: CommentMap;
     kids?: Comment[];
+};
+
+export type CommentMap = {
+    [id: number]: Comment[] | undefined;
 };

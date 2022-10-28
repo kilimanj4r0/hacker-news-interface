@@ -4,7 +4,7 @@ import { RepeatIcon } from '@chakra-ui/icons';
 import { getComments, getNewsItem } from '../../api';
 import CommentRow from './CommentRow';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { selectComments, setUpdateComments } from '../../redux/commentsSlice';
+import { clearComments, selectComments, setUpdateComments } from '../../redux/commentsSlice';
 import { selectNewsItem } from '../../redux/newsSlice';
 
 const NewsComments: React.FC<{ areNewsLoaded: boolean }> = ({ areNewsLoaded }) => {
@@ -38,6 +38,7 @@ const NewsComments: React.FC<{ areNewsLoaded: boolean }> = ({ areNewsLoaded }) =
     };
 
     React.useEffect(() => {
+        dispatch(clearComments());
         getCommentsHandler(newsItem.comments);
     }, [newsItem]);
 
@@ -57,6 +58,7 @@ const NewsComments: React.FC<{ areNewsLoaded: boolean }> = ({ areNewsLoaded }) =
                         flex="0 0 auto"
                         alignItems="center"
                         height="auto"
+                        py={2}
                         onClick={() => updateCommentsHandler()}
                     >
                         <RepeatIcon mr={1} color="orange" />
@@ -64,7 +66,7 @@ const NewsComments: React.FC<{ areNewsLoaded: boolean }> = ({ areNewsLoaded }) =
                     </Button>
                 </Box>
             </Skeleton>
-            {!areCommentsLoaded && !areNewsLoaded && (
+            {(!areCommentsLoaded || !areNewsLoaded) && (
                 <VStack spacing={5} padding={3} align="stretch">
                     {[...Array(10)].map((_, index) => (
                         <SkeletonText key={index} noOfLines={3} />
@@ -72,10 +74,12 @@ const NewsComments: React.FC<{ areNewsLoaded: boolean }> = ({ areNewsLoaded }) =
                 </VStack>
             )}
             {areCommentsLoaded && areNewsLoaded && (
-                <VStack spacing={3} padding={3} align="stretch">
-                    {comments.map((comment) => (
-                        <CommentRow key={comment.id} comment={comment} />
-                    ))}
+                <VStack spacing={3} py={3} align="stretch">
+                    {comments.map((comment) => {
+                        if (comment !== undefined && comment.text !== '') {
+                            return <CommentRow key={comment.id} comment={comment} />;
+                        }
+                    })}
                 </VStack>
             )}
         </>

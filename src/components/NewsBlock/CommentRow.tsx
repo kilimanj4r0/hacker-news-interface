@@ -7,31 +7,34 @@ import { convertTimeToDate } from '../../utils';
 import parse from 'html-react-parser';
 import { getComments } from '../../api';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { clearCommentKids, selectCommentKids, setCommentKids } from '../../redux/commentsSlice';
+import { clearCommentKids, selectCommentKids, selectCommentKidsIds, setCommentKids } from '../../redux/commentsSlice';
 
-const CommentRow: React.FC<{ comment: Comment }> = ({ comment }) => {
+const CommentRow: React.FC<{ comment: Comment; ml?: number }> = ({ comment, ml }) => {
     const commentKids = useAppSelector(selectCommentKids(comment.id));
+    const commentKidsIds = useAppSelector(selectCommentKidsIds(comment.id));
     const dispatch = useAppDispatch();
+
     const [kidsOpened, setKidsOpened] = React.useState<boolean>(false);
     const [disableKids, setDisableKids] = React.useState<boolean>(false);
 
     const getCommentKidsHandler = () => {
-        if (comment.kidsIds === undefined) {
+        if (commentKidsIds === undefined) {
             setDisableKids(true);
             return;
         }
-        getComments(comment.kidsIds).then((data) => {
+        getComments(commentKidsIds).then((data) => {
             dispatch(
                 setCommentKids({
-                    id: comment.id,
+                    comment: comment,
                     kids: data,
                 }),
             );
         });
     };
+    console.log('commentKidsIds', commentKidsIds, 'commentKids', commentKids);
 
     return (
-        <>
+        <Box ml={ml}>
             <Box
                 w="100%"
                 borderRadius="md"
@@ -41,7 +44,7 @@ const CommentRow: React.FC<{ comment: Comment }> = ({ comment }) => {
                 py={2}
                 display="flex"
                 justifyContent="space-between"
-                alignItems="center"
+                alignItems="stretch"
             >
                 <Flex w="100%" direction="column" justifyContent="flex-start">
                     <Box display="flex" alignItems="center">
@@ -53,7 +56,8 @@ const CommentRow: React.FC<{ comment: Comment }> = ({ comment }) => {
                             mr={3}
                             color="orange.500"
                         >
-                            <AtSignIcon mr={1} /> {comment.author}
+                            <AtSignIcon mr={1} />
+                            {comment.author}
                         </Box>
                         <Box color="gray.500" fontWeight="medium" fontSize="xs" display="flex" alignItems="center">
                             <TimeIcon mr={1} />
@@ -71,6 +75,7 @@ const CommentRow: React.FC<{ comment: Comment }> = ({ comment }) => {
                     fontSize="md"
                     _hover={{ bg: 'gray.50' }}
                     ml={3}
+                    height="auto"
                     display={disableKids ? 'none' : 'flex'}
                     onClick={() => {
                         if (!kidsOpened) {
@@ -86,14 +91,18 @@ const CommentRow: React.FC<{ comment: Comment }> = ({ comment }) => {
                     {kidsOpened ? <ChevronUpIcon /> : <ChevronDownIcon />}
                 </Button>
             </Box>
+            {/* TODO Add Skeleton */}
             {kidsOpened && commentKids !== undefined && (
-                <VStack spacing={3} padding={3} align="stretch">
-                    {commentKids.map((comment) => (
-                        <CommentRow key={comment.id} comment={comment} />
-                    ))}
+                <VStack spacing={3} py={3} align="stretch">
+                    {commentKids.map((commentKid) => {
+                        console.log('comment', commentKid);
+                        if (commentKid !== undefined && commentKid.text !== '') {
+                            return <CommentRow key={commentKid.id} comment={commentKid} ml={4} />;
+                        }
+                    })}
                 </VStack>
             )}
-        </>
+        </Box>
     );
 };
 
