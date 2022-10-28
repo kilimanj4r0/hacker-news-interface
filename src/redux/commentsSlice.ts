@@ -26,13 +26,10 @@ export const commentsSlice = createSlice({
 
             const recursiveUpdate = (parent: Comment, comments: Comment[]): Comment => {
                 if (parent.parent === undefined) {
-                    console.log('parent.parent === undefined', parent, comments);
                     return { ...parent, kids: comments };
                 }
                 getComment(parent.parent).then((newParent) => {
                     const newComment = { ...parent, kids: comments } as Comment;
-                    console.log('newComment', newComment);
-                    console.log('newParent', newParent);
                     if (newParent.kids !== undefined) {
                         return recursiveUpdate(newParent, [...newParent.kids, newComment]);
                     }

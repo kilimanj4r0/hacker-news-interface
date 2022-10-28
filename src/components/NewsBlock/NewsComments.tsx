@@ -28,7 +28,6 @@ const NewsComments: React.FC<{ areNewsLoaded: boolean }> = ({ areNewsLoaded }) =
 
     const updateCommentsHandler = () => {
         if (commentsCount > 0) {
-            console.log('Update comments');
             getNewsItem(newsItem.id).then((news) => {
                 if (news.commentsCount !== commentsCount) {
                     getCommentsHandler(news.comments);

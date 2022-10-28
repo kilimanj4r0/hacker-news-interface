@@ -80,10 +80,8 @@ const CommentRow: React.FC<{ comment: Comment; ml?: number }> = ({ comment, ml }
                     display={disableKids ? 'none' : 'flex'}
                     onClick={() => {
                         if (!kidsOpened) {
-                            console.log('Get kids');
                             getCommentKidsHandler();
                         } else {
-                            console.log('Clear kids');
                             dispatch(clearCommentKids(comment.id));
                         }
                         setKidsOpened(!kidsOpened);
@@ -102,7 +100,6 @@ const CommentRow: React.FC<{ comment: Comment; ml?: number }> = ({ comment, ml }
             {isKidsLoaded && kidsOpened && commentKids !== undefined && (
                 <VStack spacing={3} py={3} align="stretch">
                     {commentKids.map((commentKid) => {
-                        console.log('comment', commentKid);
                         if (commentKid !== undefined && commentKid.text !== '') {
                             return <CommentRow key={commentKid.id} comment={commentKid} ml={4} />;
                         }

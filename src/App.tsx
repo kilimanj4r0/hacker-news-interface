@@ -28,7 +28,6 @@ function App() {
             dispatch(setNewsItems(data));
             setIsLoaded(true);
         });
-        console.log('Initialized');
     }, []);
 
     return (
